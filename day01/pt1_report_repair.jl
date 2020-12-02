@@ -21,3 +21,7 @@ end
 println(val1)
 println(val2)
 println(prod)
+
+open("pt1_report_repair_soln.txt", "w") do f
+    write(f, string(prod))
+end

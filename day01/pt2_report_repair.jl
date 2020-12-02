@@ -21,14 +21,16 @@ function triple_add(values)
     for row in eachrow(first_pass)
         for val in expense_report
             if sum(row) + val == 2020
-                println(row)
-                println(val)
+                #println(row)
+                #println(val)
                 return prod(row) * val
             end
         end
     end
 end
 
-println(triple_add(expense_report))
+open("pt2_report_repair_soln.txt", "w") do f
+    write(f, string(triple_add(expense_report)))
+end
 
 end
