@@ -7,8 +7,6 @@ using NamedArrays
 # read the file one line at a time
 fname = "test_passport_processing.txt"
 global passports = []
-@show typeof(passports)
-@show passports
 
 open(fname) do file
     temp_dict = Dict{String,String}()
@@ -23,65 +21,48 @@ open(fname) do file
                 push!(passports, temp_dict)
             end
         else
-            @show temp_dict
             push!(passports, temp_dict)
             temp_dict = Dict{String,String}()
         end
     end
 end
 
-@show passports
 # now that we have passports in a standardized format 
 # we can process them one at a time
-#=
-req_fields = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
-
-nvalid = 0
+global req_fields = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
+global nvalid = 0
 
 
+# originally was using and statements
+# someone on reddit, whose name I can't now find, used not and or statements instead with continues
+# so I'm trying that now
 for port in passports
-    nfields = 0
-    fields = split(port, " ")
-    for field in fields
-        keyval = split(field, ":")
-        label = keyval[1]
-        data = keyval[2]
-        if label == "byr" && parse(Int64, data) >= 1920 && parse(Int64, data) <= 2002
-            nfields += 1
-                
-        elseif label == "iyr" && parse(Int64, data) >= 2010 && parse(Int64, data) <= 2020
-            nfields += 1
-        
-        elseif label == "eyr" && parse(Int64, data) >= 2020 && parse(Int64, data) <= 2030
-            nfields += 1
-
-        elseif label == "hgt" && occursin(r"^\d+(cm|in)", data)
-            num_only = parse(Int64, chop(data, tail = 2))
-            if endswith(data, "cm")
-                if num_only >= 150 && num_only <= 193
-                    nfields += 1
-                end
-            elseif endswith(data, "in")
-                if num_only >= 59 && num_only <= 76
-                    nfields += 1
-                end
-            end
-        
-        elseif label == "hcl" && occursin(r"^\#[0-9a-f]{6}", data)
-            nfields += 1
-        
-        elseif label == "ecl" && (data in ["amb", "blu", "brn","gry", "grn","hzl","oth"])
-            nfields += 1
-        
-        elseif label == "pid" && occursin(r"^\d{9}", data)
-            nfields += 1
-        end
-    end
-    if nfields == 7 
+    if !haskey(port, "byr") || !(1920 <= parse(Int, port["byr"]) <= 2002) 
+        continue
+    elseif !haskey(port, "iyr") || !(2010 <= parse(Int, port["iyr"]) <= 2020)
+        continue
+    elseif !haskey(port, "eyr") || !(2020 <= parse(Int, port["eyr"]) <= 2030)
+        continue
+    elseif !haskey(port, "hgt") || !occursin(r"^d\+(cm|in)", port["hgt"]) 
+        continue
+    elseif !(occursin(r"^d\+cm", port["hgt"])) || !(150 <= parse(Int, chop(port["hgt"], tail=2)) <= 190)
+        continue
+    elseif !(occursin(r"^d\+in", port["hgt"])) || !(59 <= parse(Int, chop(port["hgt"], tail=2)) <= 76)
+        continue
+    elseif !haskey(port, "hcl") || !occursin(r"^\#[0-9a-f]{6}", port["hcl"])
+        continue
+    elseif !haskey(port, "ecl") || !occursin(r"^(amb|blu|brn|gry|grn|hzl|oth)", port["ecl"])
+        continue
+    elseif !haskey(port, "pid") || !occursin(r"^[0-9]{9}", port["pid"])
+        continue
+    else
         global nvalid += 1
     end
-end
 
+@show nvalid
+
+#=
 open("pt2_passport_processing_soln.txt", "w") do f
     write(f, string(nvalid))
-end =#
+end
+=# 
