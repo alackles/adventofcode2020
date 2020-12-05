@@ -5,27 +5,35 @@ using NamedArrays
 
 # first just standardize the passport format 
 # read the file one line at a time
-fname = "input_passport_processing.txt"
+fname = "test_passport_processing.txt"
 global passports = []
-global temp_string = ""
+@show typeof(passports)
+@show passports
 
 open(fname) do file
+    temp_dict = Dict{String,String}()
     for line in eachline(file)
-        line = chomp(line)
-        if eof(file)
-            global temp_string = temp_string * " " * line
-            global passports = push!(passports, lstrip(temp_string))
-        elseif isempty(line)
-            global passports = push!(passports, lstrip(temp_string))
-            global temp_string = ""
+        if !isempty(line)
+            splitline = split(chomp(line), " ")
+            for entry in splitline
+                (key, value) = split(entry, ":")
+                temp_dict[key] = value
+            end
+            if eof(file)
+                push!(passports, temp_dict)
+            end
         else
-            global temp_string = temp_string * " " * line
+            @show temp_dict
+            push!(passports, temp_dict)
+            temp_dict = Dict{String,String}()
         end
     end
 end
+
+@show passports
 # now that we have passports in a standardized format 
 # we can process them one at a time
-
+#=
 req_fields = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
 
 nvalid = 0
@@ -76,4 +84,4 @@ end
 
 open("pt2_passport_processing_soln.txt", "w") do f
     write(f, string(nvalid))
-end
+end =#
