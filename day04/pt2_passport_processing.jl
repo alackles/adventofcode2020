@@ -34,7 +34,8 @@ global nvalid = 0
 
 
 # originally was using and statements
-# someone on reddit, whose name I can't now find, used not and or statements instead with continues
+# inspired by https://github.com/goggle/AdventOfCode2020.jl/blob/master/src/day04/day04.jl
+# against whom i have also checked my regexes
 # so I'm trying that now
 for port in passports
     if !haskey(port, "byr") || !(1920 <= parse(Int, port["byr"]) <= 2002) 
@@ -51,9 +52,9 @@ for port in passports
         continue
     elseif !haskey(port, "hcl") || !occursin(r"^\#[0-9a-f]{6}", port["hcl"])
         continue
-    elseif !haskey(port, "ecl") || !occursin(r"^(amb|blu|brn|gry|grn|hzl|oth)", port["ecl"])
+    elseif !haskey(port, "ecl") || !occursin(r"^(amb|blu|brn|gry|grn|hzl|oth)$", port["ecl"])
         continue
-    elseif !haskey(port, "pid") || !occursin(r"^[0-9]{9}", port["pid"])
+    elseif !haskey(port, "pid") || !occursin(r"^\d{9}$", port["pid"])
         continue
     else
         global nvalid += 1
