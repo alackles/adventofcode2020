@@ -5,7 +5,7 @@ using NamedArrays
 
 # first just standardize the passport format 
 # read the file one line at a time
-fname = "test_passport_processing.txt"
+fname = "input_passport_processing.txt"
 global passports = []
 
 open(fname) do file
@@ -43,11 +43,11 @@ for port in passports
         continue
     elseif !haskey(port, "eyr") || !(2020 <= parse(Int, port["eyr"]) <= 2030)
         continue
-    elseif !haskey(port, "hgt") || !occursin(r"^d\+(cm|in)", port["hgt"]) 
+    elseif !haskey(port, "hgt") || !occursin(r"^\d+(cm|in)", port["hgt"]) 
         continue
-    elseif !(occursin(r"^d\+cm", port["hgt"])) || !(150 <= parse(Int, chop(port["hgt"], tail=2)) <= 190)
+    elseif occursin(r"^\d+cm", port["hgt"]) && !(150 <= parse(Int, chop(port["hgt"], tail=2)) <= 193)
         continue
-    elseif !(occursin(r"^d\+in", port["hgt"])) || !(59 <= parse(Int, chop(port["hgt"], tail=2)) <= 76)
+    elseif occursin(r"^\d+in", port["hgt"]) && !(59 <= parse(Int, chop(port["hgt"], tail=2)) <= 76)
         continue
     elseif !haskey(port, "hcl") || !occursin(r"^\#[0-9a-f]{6}", port["hcl"])
         continue
@@ -58,11 +58,10 @@ for port in passports
     else
         global nvalid += 1
     end
+end
 
 @show nvalid
 
-#=
 open("pt2_passport_processing_soln.txt", "w") do f
     write(f, string(nvalid))
 end
-=# 
