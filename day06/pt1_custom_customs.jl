@@ -1,6 +1,6 @@
 
 # first read in the data
-fname = "test_custom_customs.txt"
+fname = "input_custom_customs.txt"
 global entries = []
 
 open(fname) do file
@@ -19,5 +19,15 @@ open(fname) do file
     end
 end
 
+# Now find the actual answer
 
-@show entries
+global sumcount = 0
+
+for entry in entries
+    global sumcount += length(unique(entry))
+end
+
+
+open("pt1_custom_customs_soln.txt", "w") do f
+    write(f, string(sumcount))
+end
